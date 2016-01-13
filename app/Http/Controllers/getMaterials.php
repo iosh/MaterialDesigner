@@ -15,6 +15,7 @@ class getMaterials extends Controller
     public function index()
     {
         //return view('user.profile', ['user' => User::findOrFail($id)]);
+        
         return view('pages.designer');
     }
 }

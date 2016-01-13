@@ -183,7 +183,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {!! Form::Submit('Submit', ['ckass' => 'btn btn-primary form-control']) !!}
+                            {!! Form::Submit('Submit', ['ckass' => 'btn btn-primary form-control') !!}
                         </div>
                     {!! Form::close() !!}{!! Form::close() !!}
                 </div>

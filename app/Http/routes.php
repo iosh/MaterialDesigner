@@ -11,11 +11,18 @@
 |
 */
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return view('welcome');
 });
+*/
+Route::resource('material', 'MaterialController');
+Route::resource('materialoption' , 'MaterialOption');
 
-Route::get('designer', 'MaterialsController@index');
+/*
+Route::get('materials/read', 'MaterialsController@read');
+Route::get('materials/update', 'MaterialsController@update');
+Route::get('materials/delete', 'MaterialsController@delete');
+*/
 
 /*
 |--------------------------------------------------------------------------
