@@ -15,6 +15,7 @@
      </tr>
      </thead>
      <tbody>
+     @if (count($materials) > 0)
      @foreach ($materials as $material)
          <tr>
              <td>{{ $material->material_id }}</td>
@@ -31,7 +32,11 @@
              </td>
          </tr>
      @endforeach
-
+     @else
+       <tr>
+             <td colspan="8"></td>
+       </tr>
+     @endif
      </tbody>
 
  </table>

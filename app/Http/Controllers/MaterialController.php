@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Material;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+
 
 class MaterialController extends Controller
 {
@@ -13,7 +14,7 @@ class MaterialController extends Controller
     public function index()
     {
 
-        $materials = Material::all();
+    $materials = Material::all();
         
         return view('material.index',compact('materials'));
         
@@ -24,7 +25,7 @@ class MaterialController extends Controller
      *
      * @return Response
      */
-    public function create()
+    public function create($id)
     {
         //echo
         return view('material.create');
@@ -44,18 +45,18 @@ class MaterialController extends Controller
         
         $input = $request->all();
         
-        $location = '/public/images/material/';
+        $location = '/public/images/materialoption/';
         
         $imageName = $this->processImage(
-            $request->file('thumbnail'),
+            $request->file('image'),
             $location
             );
         
-        $input['thumbnail'] = $imageName;
+        $input['image'] = $imageName;
         
         Material::create($input);
     
-        return redirect('material');
+        return redirect('materialoption');
     } 
 
     /**

@@ -16,7 +16,11 @@
 });
 */
 Route::resource('material', 'MaterialController');
-Route::resource('materialoption' , 'MaterialOption');
+
+Route::get('materialoption/create/{id}', 'MaterialOptionController@create');
+Route::resource('materialoption' , 'MaterialOptionController');
+
+Route::resource('materialsAPI' , 'MaterialsAPI');
 
 /*
 Route::get('materials/read', 'MaterialsController@read');
