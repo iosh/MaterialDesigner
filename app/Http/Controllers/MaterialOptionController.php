@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Material;
 use App\MaterialOption;
 
 class MaterialOptionController extends Controller
@@ -14,7 +15,14 @@ class MaterialOptionController extends Controller
     //
     public function index($id)
     {
-
+        $materialOptions = MaterialOption::where('material_id','=',$id)->get();
+        
+        $materialOptions->name = Material::select('name')
+                                                        ->where('material_id','=',$id)
+                                                        ->first()->name;
+        $materialOptions->id = $id;
+        
+        return view('materialoption.index',compact('materialOptions'));
         
     }
     
@@ -38,23 +46,26 @@ class MaterialOptionController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'description' => 'required',
+            'image'   => 'required|mimes:png',
         ]);
         
         $input = $request->all();
         
-        $location = '/public/images/material/';
+        $location = '/public/images/materialoption/';
         
         $imageName = $this->processImage(
-            $request->file('thumbnail'),
-            $location
-            );
+                                        $input['name'],
+                                        $request->file('image'),
+                                        $location
+                                        );
         
-        $input['thumbnail'] = $imageName;
+        $input['image'] = $imageName;
+
+        MaterialOption::create($input);
         
-        Material::create($input);
-    
-        return redirect('material');
+        $material_id = $input['material_id'];
+        
+        return redirect()->route('materialoption.show', array($material_id));
     } 
 
     /**
@@ -66,9 +77,11 @@ class MaterialOptionController extends Controller
     public function show($id)
     {
         //
-        $materialOptions = MaterialOption::where('material_id','=',$id)->get();
+        $materialOptions = MaterialOption::where('material_option_id','=',$id)->first();
+        
         $materialOptions->id = $id;
-        return view('materialoption.index',compact('materialOptions'));
+        
+        return view('materialoption.show',compact('materialOptions'));
     }
 
     /**
@@ -80,9 +93,12 @@ class MaterialOptionController extends Controller
     public function edit($id)
     {
         //Get material
-        $material = Material::where('material_id','=',$id)->first();
-    
-        return view('material.edit',compact('material'));
+        $materialOption = MaterialOption::where('material_option_id','=',$id)->first();
+
+        $materials = Material::lists('name','material_id');
+        
+        
+        return view('materialoption.edit',compact('materialOption','materials'));
     }
     
     /**
@@ -93,28 +109,35 @@ class MaterialOptionController extends Controller
      */
     public function update($id, Request $request)
     {
-        //echo $request->file('thumbnail');exit;
-        $materialUpdate = array_except($request->all(), array('_method','_token'));
+        $this->validate($request, [
+            'name' => 'required',
+            'image'   => 'mimes:png',
+        ]);
+        
+        $materialOptionUpdate = array_except($request->all(), array('_method','_token'));
        
         //$material=material::find($id);
-        $material = Material::where('material_id','=',$id)->first();
-        //var_dump($materialUpdate);exit;
+        $material = MaterialOption::where('material_option_id','=',$id)->first();
+
         //get filename and move
-        $location = '/public/images/material/';
-        //var_dump($material);exit;
-        $imageName = $this->processImage(
-            $request->file('thumbnail'),
-            $location
-            );
+        if(isset($materialOptionUpdate['image']))
+        {
+            $location = '/public/images/materialoption/';
+    
+            $imageName = $this->processImage(
+                                            $materialOptionUpdate['name'],
+                                            $request->file('image'),
+                                            $location
+                                            );
+            
+            $materialOptionUpdate['image'] = $imageName;
+        }
         
-        $materialUpdate['thumbnail'] = $imageName;
-        
-        //var_dump($materialUpdate);
-        
-        $material->where('material_id','=',$id)
-                ->update($materialUpdate);
+            
+        $material->where('material_option_id','=',$id)
+                ->update($materialOptionUpdate);
        
-        return redirect('material');
+       return redirect()->route('materialoption.show', array($materialOptionUpdate['material_id']));
     }
 
     /**
@@ -126,7 +149,7 @@ class MaterialOptionController extends Controller
     public function destroy($id)
     {
         //
-        Material::where('material_id','=',$id)
+        MaterialOption::where('material_option_id','=',$id)
                 ->delete();
         
         return redirect('material');
@@ -136,8 +159,7 @@ class MaterialOptionController extends Controller
         return [
           'name'        => 'required',
           'description' => 'required',
-          'image'       => 'required',
-          'thumbnail'   => 'required|mimes:png'
+          'image'       => 'required|mimes:png',
         ];
     }
     
@@ -149,9 +171,9 @@ class MaterialOptionController extends Controller
      * @return Response
      */
     
-    public function processImage($image,$location)
+    public function processImage($name,$image,$location)
     {
-        $imageName = $image->getClientOriginalName();
+        $imageName = $name.'-'.$image->getClientOriginalName();
 
         $image->move(base_path() . $location, $imageName);
         

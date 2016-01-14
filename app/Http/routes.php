@@ -17,7 +17,10 @@
 */
 Route::resource('material', 'MaterialController');
 
+Route::get('materialoption/{id}', 'MaterialOptionController@index');
 Route::get('materialoption/create/{id}', 'MaterialOptionController@create');
+Route::get('materialoption/show/{id}', 'MaterialOptionController@show');
+
 Route::resource('materialoption' , 'MaterialOptionController');
 
 Route::resource('materialsAPI' , 'MaterialsAPI');

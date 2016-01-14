@@ -1,23 +1,25 @@
+
 @extends('material.template')
+
 @section('content')
     <h1>Update Material</h1>
-    {!! Form::model($material, array(
+    {!! Form::model($materialOption, array(
             'method' => 'PATCH',
-            'route' => array('material.update',$material->material_id),
+            'route' => array('materialoption.update',$materialOption->material_option_id),
             'files' => true
             )
     ) !!}
     <div class="form-group">
-        {!! Form::label('name', 'Name:') !!}
+        {!! Form::label('Material', 'Material:') !!}
+        {!! Form::select('material_id', $materials,[$materialOption->material_id],['class'=>'form-control','required']) !!}
+    </div>
+    <div class="form-group">
+        {!! Form::label('name', '*Name:') !!}
         {!! Form::text('name',null,['class'=>'form-control','required']) !!}
     </div>
     <div class="form-group">
-        {!! Form::label('description', 'Description:') !!}
-        {!! Form::text('description',null,['class'=>'form-control','required']) !!}
-    </div>
-    <div class="form-group">
-        {!! Form::label('thumbnail', 'Thumbnail:') !!}
-        {!! Form::file('thumbnail',null,['class'=>'form-control','required']) !!}
+        {!! Form::label('image', 'Image:') !!}
+        {!! Form::file('image',null,['class'=>'form-control','required']) !!}
     </div>
     <div class="form-group">
         {!! Form::submit('Update', ['class' => 'btn btn-primary']) !!}

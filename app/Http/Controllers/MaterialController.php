@@ -14,7 +14,7 @@ class MaterialController extends Controller
     public function index()
     {
 
-    $materials = Material::all();
+        $materials = Material::all();
         
         return view('material.index',compact('materials'));
         
@@ -25,7 +25,7 @@ class MaterialController extends Controller
      *
      * @return Response
      */
-    public function create($id)
+    public function create()
     {
         //echo
         return view('material.create');
@@ -41,22 +41,24 @@ class MaterialController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'description' => 'required',
+            'thumbnail'   => 'required|mimes:png',
         ]);
         
         $input = $request->all();
         
-        $location = '/public/images/materialoption/';
+        $location = '/public/images/material/';
         
         $imageName = $this->processImage(
-            $request->file('image'),
-            $location
-            );
+                                        $input['name'],
+                                        $request->file('thumbnail'),
+                                        $location
+                                        );
         
-        $input['image'] = $imageName;
+        $input['thumbnail'] = $imageName;
         
         Material::create($input);
     
-        return redirect('materialoption');
+        return redirect('material');
     } 
 
     /**
@@ -70,10 +72,6 @@ class MaterialController extends Controller
         //
         $material = Material::where('material_id','=',$id)->first();
 
-        //$material = $results->items;
-
-        //var_dump($material);exit;
-        
         return view('material.show',compact('material'));
     }
 
@@ -99,24 +97,29 @@ class MaterialController extends Controller
      */
     public function update($id, Request $request)
     {
-        //echo $request->file('thumbnail');exit;
+        $this->validate($request, [
+            'name' => 'required',
+            'description' => 'required',
+        ]);
+        
         $materialUpdate = array_except($request->all(), array('_method','_token'));
        
         //$material=material::find($id);
         $material = Material::where('material_id','=',$id)->first();
-        //var_dump($materialUpdate);exit;
+
         //get filename and move
-        $location = '/public/images/material/';
-        //var_dump($material);exit;
-        $imageName = $this->processImage(
-            $request->file('thumbnail'),
-            $location
-            );
-        
-        $materialUpdate['thumbnail'] = $imageName;
-        
-        //var_dump($materialUpdate);
-        
+        if(isset($materialOptionUpdate['thumbnail']))
+        {
+            $location = '/public/images/material/';
+            //var_dump($material);exit;
+            $imageName = $this->processImage(
+                                            $materialUpdate['name'],
+                                            $request->file('thumbnail'),
+                                            $location
+                                            );
+            
+            $materialUpdate['thumbnail'] = $imageName;
+        }    
         $material->where('material_id','=',$id)
                 ->update($materialUpdate);
        
@@ -131,18 +134,17 @@ class MaterialController extends Controller
      */
     public function destroy($id)
     {
-        //
+        //SOFT DELETE???
         Material::where('material_id','=',$id)
                 ->delete();
         
         return redirect('material');
     }
+    
     public function rules()
     {
         return [
           'name'        => 'required',
-          'description' => 'required',
-          'image'       => 'required',
           'thumbnail'   => 'required|mimes:png'
         ];
     }
@@ -155,9 +157,9 @@ class MaterialController extends Controller
      * @return Response
      */
     
-    public function processImage($image,$location)
+    public function processImage($name,$image,$location)
     {
-        $imageName = $image->getClientOriginalName();
+        $imageName = $name.'-'.$image->getClientOriginalName();
 
         $image->move(base_path() . $location, $imageName);
         

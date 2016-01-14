@@ -8,16 +8,12 @@
     ]) !!}
         {!! Form::hidden('material_id',$id) !!}
     <div class="form-group">
-        {!! Form::label('name', 'Name:') !!}
+        {!! Form::label('name', '*Name:') !!}
         {!! Form::text('name',null,['class'=>'form-control', 'required' => 'required']) !!}
     </div>
     <div class="form-group">
-        {!! Form::label('description', 'Description:') !!}
-        {!! Form::text('description',null,['class'=>'form-control','required' => 'required']) !!}
-    </div>
-    <div class="form-group">
-        {!! Form::label('thumbnail', 'Image:') !!}
-        {!! Form::file('thumbnail',null,['class'=>'form-control','required' => 'required']) !!}
+        {!! Form::label('image', '*Image:') !!}
+        {!! Form::file('image',null,['class'=>'form-control','required' => 'required']) !!}
     </div>
     <div class="form-group">
         {!! Form::submit('Save', ['class' => 'btn btn-primary form-control']) !!}
